@@ -1,9 +1,10 @@
 # Spend Requests + Reservation Accounting Slice
 
-Status: **uncommitted implementation candidate**
+Status: **integrated into the current v1 implementation**
 
-This slice implements the frozen deterministic request layer from
-`docs/SPEC_V1.md` and leaves validator adjudication for the next phase.
+This document records the deterministic request/reservation implementation
+slice. Intelligent adjudication, settlement, recovery, and withdrawal are
+implemented in the current v1 contract.
 
 ## Added storage
 
@@ -38,6 +39,9 @@ A request is rejected when:
 - the recipient is the zero address;
 - amount is zero;
 - amount exceeds the bound mandate single-spend cap;
+- purpose is empty or exceeds the deterministic size bound;
+- category is empty or exceeds the deterministic size bound;
+- either evidence URL exceeds the deterministic size bound;
 - either evidence URL is non-HTTPS or obviously malformed;
 - the two evidence URLs are identical;
 - either SHA-256 digest is malformed;
@@ -77,19 +81,22 @@ current_period_reserved = unchanged
 This slice now exercises that rule with real unresolved reservations rather
 than synthetic state.
 
-## Candidate source fingerprint
+## Historical slice source fingerprint
 
 ```text
 a489f8bafb1fa043f964a62140535af7af4a4a9fdcf8c123b558bdaac42d37c1
 ```
 
-## Explicitly NOT implemented yet
+## Current integration status
 
-- validator web fetch/hash verification;
+The current v1 contract also includes:
+
+- validator web fetch and SHA-256 verification;
 - `adjudicate_spend_request`;
 - `APPROVED` / `DENIED` settlement;
 - claimable balances;
 - owner recovery;
 - external withdrawal.
 
-Those remain `NOT RUN`.
+The complete Direct Mode regression suite passed **84/84 tests** on
+2026-08-22.

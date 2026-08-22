@@ -1,7 +1,6 @@
 # GenLayer Runtime Compatibility Check
 
-Verified on **2026-08-22** against the local OmniMandate toolchain and the
-already proven ProofSLA baseline.
+Verified on **2026-08-22** against the pinned OmniMandate development toolchain.
 
 ## Frozen development baseline
 
@@ -41,8 +40,8 @@ Full sorted `pip freeze` SHA-256:
 335359f88dab8797196c3abcb3da494ab9389c4f76a2700de2aaa94c1e7599ae
 ```
 
-The OmniMandate environment was compared byte-for-byte at the sorted
-`pip freeze` level with the proven ProofSLA environment and produced no diff.
+The OmniMandate environment is pinned by `requirements-dev.txt` and
+`requirements-lock.txt`; toolchain verification passed with no broken requirements.
 
 ## Static pinned-runtime probe
 
@@ -158,20 +157,31 @@ The frozen v1 architecture is compatible with the verified static forms for:
 - pull-payment withdrawal interface;
 - schema/ABI generation.
 
-## Still NOT proven
+## Current execution verification
 
-The static probe does **not** prove runtime execution.
+Verified on 2026-08-22:
 
-These remain `NOT RUN` until later project phases:
+- complete Direct Mode regression suite: **84/84 PASS**;
+- period rollover and reservation carry-over: **PASS in Direct Mode**;
+- payable and internal balance-accounting behavior: **PASS in Direct Mode**;
+- mocked evidence fetch and SHA-256 verification: **PASS in Direct Mode**;
+- bounded leader/validator agreement and disagreement logic: **PASS in Direct Mode**;
+- `genvm-lint check`: **PASS**;
+- normal `genvm-lint typecheck`: **PASS**;
+- ABI/schema generation: **PASS**, 20 methods.
 
-1. OmniMandate Direct Mode lifecycle execution;
-2. period rollover under `vm.warp(...)`;
-3. value/balance behavior under `vm.deal(...)`;
-4. mocked evidence fetches under `vm.mock_web(...)`;
-5. real validator adjudication execution;
-6. external EOA transfer/finality behavior for OmniMandate;
-7. Studio/Bradbury address calldata behavior for OmniMandate;
-8. supported-runtime raw execution result inspection;
-9. Bradbury deployment and live evidence.
+Current contract SHA-256:
 
-No PASS claim should be made for those items until their concrete tests run.
+```text
+adee3cc8fa24d636321b06f5779ecc8356fde99db9194f188b757d6e0fd71076
+```
+
+These results do not claim live-network validator consensus or successful external value transfer.
+
+## Bradbury verification remaining
+
+1. deploy the verified contract to Bradbury;
+2. exercise real validator adjudication against live, hash-bound evidence;
+3. verify approval and denial through transaction finality;
+4. verify real contract GEN balance behavior and successful EOA withdrawal;
+5. record the deployed address, transaction evidence, and final states for review.

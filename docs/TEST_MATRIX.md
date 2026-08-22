@@ -110,7 +110,7 @@ Target meaningful coverage. The list may grow after runtime-specific testing.
 79. zero-claimable semantics match chosen runtime behavior
 80. double withdrawal cannot transfer twice
 
-## Supported-runtime / Bradbury scenarios
+## Bradbury network scenarios
 
 Keep live tests smaller than Direct Mode.
 

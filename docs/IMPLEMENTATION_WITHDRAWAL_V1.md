@@ -1,6 +1,6 @@
 # Withdrawal + Owner Treasury Recovery
 
-Status: **uncommitted implementation candidate**
+Status: **integrated into the current v1 implementation**
 
 This slice adds the final pull-payment primitives to the deterministic treasury
 accounting layer.
@@ -54,7 +54,7 @@ because it is treasury recovery, not an autonomous-agent spend.
 
 ## `withdraw`
 
-Uses the exact production transfer pattern already proven by ProofSLA:
+Uses the production EOA transfer pattern exercised by the current OmniMandate implementation:
 
 ```python
 caller = gl.message.sender_address
@@ -73,9 +73,8 @@ This preserves effects-before-interaction.
 
 ## Direct Mode boundary
 
-The pinned ProofSLA tests establish that setting `gl.message.value` in Direct
-Mode exercises payable contract accounting but does not itself populate
-`VMContext._balances`.
+The current Direct Mode tests establish that setting `gl.message.value` exercises
+payable contract accounting but does not itself populate `VMContext._balances`.
 
 Therefore this slice can deterministically test:
 
@@ -88,16 +87,16 @@ A successful external value transfer is **not claimed as Direct Mode PASS**.
 That requires a full runtime/network execution where the contract actually
 holds chain-layer balance.
 
-## Candidate contract SHA-256
+## Current verified contract SHA-256
+
+After request-input hardening and the complete Direct Mode regression:
 
 ```text
-eac48e0305f64572747ec6ab703235162c819f4f437339bc875c5aa2ed5ce11f
+adee3cc8fa24d636321b06f5779ecc8356fde99db9194f188b757d6e0fd71076
 ```
 
-## Still NOT RUN
+## Bradbury verification remaining
 
-- successful external value transfer in a full runtime;
-- supported-runtime integration/finality;
-- Studio/localnet chain-layer transfer;
-- Bradbury deployment/finality;
+- successful external value transfer on Bradbury;
+- Bradbury deployment and finality verification;
 - live Bradbury withdrawal.

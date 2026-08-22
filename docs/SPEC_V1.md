@@ -205,8 +205,11 @@ deterministically invalid conditions including:
 - zero recipient;
 - zero amount;
 - amount above the active mandate's `max_single_spend`;
+- empty or oversized request purpose;
+- empty or oversized request category;
 - insufficient vault balance after reservations;
 - period-budget oversubscription;
+- oversized evidence URLs;
 - malformed evidence URLs;
 - non-HTTPS evidence URLs;
 - identical primary/corroboration URLs;

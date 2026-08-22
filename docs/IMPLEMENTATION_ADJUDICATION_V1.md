@@ -1,6 +1,6 @@
 # Intelligent Adjudication + Deterministic Settlement
 
-Status: **uncommitted implementation candidate**
+Status: **integrated into the current v1 implementation**
 
 This slice adds the first consensus-critical OmniMandate intelligence path.
 
@@ -114,24 +114,22 @@ recipient award               = 0
 
 ## Pull-payment boundary
 
-This slice creates `claimable` accounting only. It intentionally does **not**
-add external transfer/withdrawal yet.
+Settlement credits `claimable` accounting rather than transferring value
+inline. The current v1 contract adds `withdraw()` as a separate pull-payment
+operation.
 
-That separation matters in Direct Mode because payable `gl.message.value`
-updates contract storage logic but does not automatically populate
-`VMContext._balances`; external transfer behavior is tested separately in the
-withdrawal/finality slice.
+Direct Mode verifies settlement, claimable accounting, recovery protections,
+and failure behavior. Successful real value transfer remains a Bradbury
+network verification item.
 
-## Candidate contract SHA-256
+## Historical slice contract SHA-256
 
 ```text
 08d3f01f0cb3929720c58176cb5f90d603fe89d6e85fdc224252a74015690833
 ```
 
-## Still NOT RUN
+## Bradbury verification remaining
 
-- external EOA withdrawal;
-- supported-runtime execution;
-- Studio execution;
-- Bradbury deployment/finality;
-- live-web evidence.
+- Bradbury deployment and finality;
+- real validator execution against live evidence;
+- successful external EOA withdrawal on Bradbury.

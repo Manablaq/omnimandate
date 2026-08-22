@@ -16,9 +16,10 @@ COMPLIANT + CORROBORATED
 
 Everything else fails closed.
 
-> Status: **v1 product/storage semantics frozen; reproducible GenLayer
-> development baseline and static compatibility probe verified.**
-> Contract implementation has intentionally not started yet.
+> Status: **v1 Intelligent Contract implemented and Direct Mode verified.**
+> Pinned toolchain, GenVM validation, normal typecheck, and ABI generation pass.
+> Full Direct Mode regression suite: **84/84 tests passed on 2026-08-22**.
+> Bradbury deployment and live-network verification remain pending.
 
 ## Core rule
 
@@ -86,7 +87,7 @@ genvm-linter  fa4a4d4536b28fdc2730e13a983ba01b69ccc6f3
 pytest        8.4.2
 ```
 
-The complete sorted dependency lock matches the previously proven ProofSLA
+The complete sorted dependency lock matches the verified pinned OmniMandate
 environment exactly.
 
 Static pinned-runtime probe:
@@ -97,45 +98,42 @@ NONDET_PROBE    PASS
 Overall         PASS
 ```
 
-This is a static compatibility result, not a Direct Mode or Bradbury execution
-claim.
+The static probe is one part of the verified baseline. Direct Mode execution is separately verified; Bradbury live-network execution remains pending.
 
 ## Repository structure
 
 ```text
-contracts/              Intelligent Contract implementation (next phase)
-docs/
-  SPEC_V1.md
-  ARCHITECTURE.md
-  THREAT_MODEL.md
-  TEST_MATRIX.md
-  DECISIONS.md
-  RUNTIME_COMPATIBILITY.md
-tests/                  Direct Mode/runtime tests (implementation phase)
-scripts/                reproducible verification tooling
-requirements-dev.txt    direct development pins
+contracts/              OmniMandate Intelligent Contract
+docs/                   specification, architecture, security, and verification
+tests/                  Direct Mode regression suite
+scripts/                reproducible toolchain verification
+requirements-dev.txt    pinned development dependencies
 requirements-lock.txt   exact verified environment snapshot
 ```
 
-## Development order
+## Current delivery path
+
+Completed:
 
 ```text
-scope
-→ originality sanity check
-→ v1 specification
-→ architecture
-→ threat model
-→ runtime compatibility
-→ local toolchain pinning
-→ contract implementation
-→ Direct Mode
-→ independent review
-→ supported runtime
-→ Bradbury
-→ live evidence
-→ frontend
+scope and product semantics
+→ architecture and threat model
+→ pinned toolchain verification
+→ Intelligent Contract implementation
+→ Direct Mode regression testing
+→ GenVM lint / validation / typecheck / ABI verification
+```
+
+Next:
+
+```text
+Bradbury deployment and live-network verification
+→ real validator approval / denial verification
+→ finality verification
+→ live Bradbury withdrawal verification
+→ frontend integration
 → browser E2E
-→ production
+→ reviewer-readiness audit
 → submission
 ```
 

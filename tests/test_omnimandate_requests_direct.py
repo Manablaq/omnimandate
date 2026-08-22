@@ -290,6 +290,113 @@ def test_single_spend_cap_is_enforced(
             )
 
 
+def test_empty_purpose_is_rejected(
+    direct_vm,
+    direct_deploy,
+    direct_alice,
+    direct_bob,
+):
+    contract, vault_id, U = _setup(
+        direct_vm, direct_deploy, direct_alice, direct_bob
+    )
+    with direct_vm.expect_revert("request purpose cannot be empty"):
+        _create_request(
+            contract,
+            direct_vm,
+            U,
+            vault_id,
+            direct_bob,
+            direct_alice,
+            purpose="   ",
+        )
+
+
+def test_oversized_purpose_is_rejected(
+    direct_vm,
+    direct_deploy,
+    direct_alice,
+    direct_bob,
+):
+    contract, vault_id, U = _setup(
+        direct_vm, direct_deploy, direct_alice, direct_bob
+    )
+    with direct_vm.expect_revert("request purpose is too long"):
+        _create_request(
+            contract,
+            direct_vm,
+            U,
+            vault_id,
+            direct_bob,
+            direct_alice,
+            purpose="p" * 1001,
+        )
+
+
+def test_empty_category_is_rejected(
+    direct_vm,
+    direct_deploy,
+    direct_alice,
+    direct_bob,
+):
+    contract, vault_id, U = _setup(
+        direct_vm, direct_deploy, direct_alice, direct_bob
+    )
+    with direct_vm.expect_revert("request category cannot be empty"):
+        _create_request(
+            contract,
+            direct_vm,
+            U,
+            vault_id,
+            direct_bob,
+            direct_alice,
+            category="   ",
+        )
+
+
+def test_oversized_category_is_rejected(
+    direct_vm,
+    direct_deploy,
+    direct_alice,
+    direct_bob,
+):
+    contract, vault_id, U = _setup(
+        direct_vm, direct_deploy, direct_alice, direct_bob
+    )
+    with direct_vm.expect_revert("request category is too long"):
+        _create_request(
+            contract,
+            direct_vm,
+            U,
+            vault_id,
+            direct_bob,
+            direct_alice,
+            category="c" * 129,
+        )
+
+
+def test_oversized_evidence_url_is_rejected(
+    direct_vm,
+    direct_deploy,
+    direct_alice,
+    direct_bob,
+):
+    contract, vault_id, U = _setup(
+        direct_vm, direct_deploy, direct_alice, direct_bob
+    )
+    oversized_url = "https://evidence.example/" + ("a" * 4096)
+
+    with direct_vm.expect_revert("evidence URL is too long"):
+        _create_request(
+            contract,
+            direct_vm,
+            U,
+            vault_id,
+            direct_bob,
+            direct_alice,
+            primary_url=oversized_url,
+        )
+
+
 def test_non_https_primary_url_is_rejected(
     direct_vm,
     direct_deploy,

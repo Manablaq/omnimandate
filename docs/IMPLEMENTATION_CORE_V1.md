@@ -7,7 +7,7 @@ Frozen semantic API:
 get_mandate(vault_id, version)
 ```
 
-The first core candidate exposed only `get_mandate(mandate_id)`. The contract
+The first core implementation exposed only `get_mandate(mandate_id)`. The contract
 now preserves the frozen public semantics by walking the immutable linked
 mandate history from the vault's active mandate.
 
@@ -42,11 +42,10 @@ mandate history from the vault's active mandate.
 - safe budget increase;
 - immutable vault-level period length.
 
-Reservation carry-over cannot yet be exercised legitimately because spend
-requests do not exist in this slice. No test-only production backdoor is added.
+Reservation carry-over is now exercised through real unresolved spend requests in the current implementation. No test-only production backdoor is used.
 
-## Required reporting
+## Current verification
 
-Report each gate as PASS / FAIL / NOT RUN.
+This core slice is integrated into the current v1 contract.
 
-Static success does not prove Direct Mode runtime behavior.
+On 2026-08-22 the complete Direct Mode regression suite passed **84/84 tests**.
