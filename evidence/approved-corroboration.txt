@@ -1,0 +1,10 @@
+OMNIMANDATE BRADBURY DEMO EVIDENCE — APPROVAL CORROBORATION
+
+Record ID: omni-live-approved-001
+Operations classification: production API service expense
+Purpose: Pay production API service invoice
+Category: API_SERVICES
+Amount: 3000 wei
+Recipient: 0x1f87Ae197af539253978d435aD45cCf28Fb95024
+Status: expense confirmed
+Finding: this record corroborates the same production API service expense.

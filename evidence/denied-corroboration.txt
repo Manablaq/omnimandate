@@ -1,0 +1,10 @@
+OMNIMANDATE BRADBURY DEMO EVIDENCE — POLICY DENIAL CORROBORATION
+
+Record ID: omni-live-denied-001
+Operations classification: personal entertainment expense
+Purpose: Purchase personal gaming entertainment
+Category: ENTERTAINMENT
+Amount: 3000 wei
+Recipient: 0x1f87Ae197af539253978d435aD45cCf28Fb95024
+Status: expense confirmed
+Finding: this record corroborates the same personal entertainment purchase.
