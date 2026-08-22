@@ -95,8 +95,8 @@ After request-input hardening and the complete Direct Mode regression:
 adee3cc8fa24d636321b06f5779ecc8356fde99db9194f188b757d6e0fd71076
 ```
 
-## Bradbury verification remaining
+## Bradbury live verification
 
-- successful external value transfer on Bradbury;
-- Bradbury deployment and finality verification;
-- live Bradbury withdrawal.
+- successful external value transfer on Bradbury: verified;
+- Bradbury deployment and finality verification: verified;
+- live Bradbury withdrawal: verified by finalized 3000 wei ghost-balance decrease.

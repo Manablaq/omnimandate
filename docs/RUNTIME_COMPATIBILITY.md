@@ -176,12 +176,12 @@ Current contract SHA-256:
 adee3cc8fa24d636321b06f5779ecc8356fde99db9194f188b757d6e0fd71076
 ```
 
-These results do not claim live-network validator consensus or successful external value transfer.
+Live-network validator consensus and finalized external value transfer are now verified on Bradbury. See [Bradbury Live Verification](BRADBURY_LIVE_VERIFICATION.md).
 
-## Bradbury verification remaining
+## Bradbury live verification
 
-1. deploy the verified contract to Bradbury;
-2. exercise real validator adjudication against live, hash-bound evidence;
-3. verify approval and denial through transaction finality;
-4. verify real contract GEN balance behavior and successful EOA withdrawal;
-5. record the deployed address, transaction evidence, and final states for review.
+1. deployed the verified contract to Bradbury at `0x04c1E361ec0Da96a263794F1f582989c2419267C`;
+2. exercised real validator adjudication against immutable, hash-bound Bradbury demo evidence;
+3. verified finalized approval and denial paths;
+4. verified finalized EOA withdrawal through an exact 3000 wei ghost-balance decrease;
+5. recorded the complete evidence trail in [Bradbury Live Verification](BRADBURY_LIVE_VERIFICATION.md).

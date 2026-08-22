@@ -19,7 +19,7 @@ Everything else fails closed.
 > Status: **v1 Intelligent Contract implemented and Direct Mode verified.**
 > Pinned toolchain, GenVM validation, normal typecheck, and ABI generation pass.
 > Full Direct Mode regression suite: **84/84 tests passed on 2026-08-22**.
-> Bradbury deployment and live-network verification remain pending.
+> Bradbury deployment and live-network contract verification completed on 2026-08-22. Frontend deployment remains pending.
 
 ## Core rule
 
@@ -98,7 +98,7 @@ NONDET_PROBE    PASS
 Overall         PASS
 ```
 
-The static probe is one part of the verified baseline. Direct Mode execution is separately verified; Bradbury live-network execution remains pending.
+The static probe is one part of the verified baseline. Direct Mode execution is separately verified; Bradbury live-network execution is now verified; see [Bradbury Live Verification](docs/BRADBURY_LIVE_VERIFICATION.md).
 
 ## Repository structure
 
@@ -124,14 +124,12 @@ scope and product semantics
 → GenVM lint / validation / typecheck / ABI verification
 ```
 
+Bradbury contract verification is complete. See [Bradbury Live Verification](docs/BRADBURY_LIVE_VERIFICATION.md).
+
 Next:
 
 ```text
-Bradbury deployment and live-network verification
-→ real validator approval / denial verification
-→ finality verification
-→ live Bradbury withdrawal verification
-→ frontend integration
+frontend integration
 → browser E2E
 → reviewer-readiness audit
 → submission
@@ -142,7 +140,7 @@ Bradbury deployment and live-network verification
 - Repository: https://github.com/Manablaq/omnimandate
 - Target network: GenLayer Bradbury Testnet
 - Live app: not deployed yet
-- Contract: not deployed yet
+- Contract: `0x04c1E361ec0Da96a263794F1f582989c2419267C` on GenLayer Bradbury Testnet
 
 ## Documentation
 
@@ -150,5 +148,6 @@ Bradbury deployment and live-network verification
 - [Architecture](docs/ARCHITECTURE.md)
 - [Threat Model](docs/THREAT_MODEL.md)
 - [Test Matrix](docs/TEST_MATRIX.md)
+- [Bradbury Live Verification](docs/BRADBURY_LIVE_VERIFICATION.md)
 - [Architecture Decisions](docs/DECISIONS.md)
 - [Runtime Compatibility](docs/RUNTIME_COMPATIBILITY.md)

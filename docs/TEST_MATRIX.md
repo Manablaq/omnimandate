@@ -112,6 +112,8 @@ Target meaningful coverage. The list may grow after runtime-specific testing.
 
 ## Bradbury network scenarios
 
+Live Bradbury execution completed on 2026-08-22 for deployment, compliant approval, non-compliant denial, reservation release, pull-payment accounting, transaction finality, and external native withdrawal. See [Bradbury Live Verification](BRADBURY_LIVE_VERIFICATION.md).
+
 Keep live tests smaller than Direct Mode.
 
 ### Scenario A — Approved

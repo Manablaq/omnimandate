@@ -119,8 +119,7 @@ inline. The current v1 contract adds `withdraw()` as a separate pull-payment
 operation.
 
 Direct Mode verifies settlement, claimable accounting, recovery protections,
-and failure behavior. Successful real value transfer remains a Bradbury
-network verification item.
+and failure behavior. Successful real value transfer is now verified on Bradbury. See [Bradbury Live Verification](BRADBURY_LIVE_VERIFICATION.md).
 
 ## Historical slice contract SHA-256
 
@@ -128,8 +127,8 @@ network verification item.
 08d3f01f0cb3929720c58176cb5f90d603fe89d6e85fdc224252a74015690833
 ```
 
-## Bradbury verification remaining
+## Bradbury live verification
 
-- Bradbury deployment and finality;
-- real validator execution against live evidence;
-- successful external EOA withdrawal on Bradbury.
+- Bradbury deployment and finality: verified;
+- real validator execution against immutable Bradbury demo evidence: verified;
+- successful external EOA withdrawal on Bradbury: verified.
