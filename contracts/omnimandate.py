@@ -26,6 +26,15 @@ EVIDENCE_INSUFFICIENT = "INSUFFICIENT"
 MAX_EVIDENCE_BYTES = 100_000
 
 
+@gl.evm.contract_interface
+class _Recipient:
+    class View:
+        pass
+
+    class Write:
+        pass
+
+
 @allow_storage
 @dataclass
 class Vault:
@@ -91,8 +100,9 @@ class OmniMandate(gl.Contract):
     Deterministic vault, mandate-version, spend-request, evidence-binding,
     reservation, period, and funding primitives.
 
-    Validator adjudication and deterministic approval/denial settlement are
-    included. Owner recovery and external withdrawal remain later slices.
+    Validator adjudication, deterministic approval/denial settlement,
+    pull-payment accounting, owner recovery, and external withdrawal are
+    included.
     """
 
     vaults: TreeMap[u256, Vault]
@@ -177,6 +187,43 @@ class OmniMandate(gl.Contract):
             raise gl.vm.UserError("funding value must be positive")
 
         vault.balance = vault.balance + gl.message.value
+
+    @gl.public.write
+    def withdraw_unreserved(self, vault_id: u256, amount: u256) -> None:
+        vault = self._require_vault(vault_id)
+        self._require_owner(vault)
+
+        if amount == u256(0):
+            raise gl.vm.UserError("recovery amount must be positive")
+        if vault.reserved_balance > vault.balance:
+            raise gl.vm.UserError("vault reservation invariant violated")
+
+        available = vault.balance - vault.reserved_balance
+        if amount > available:
+            raise gl.vm.UserError("amount exceeds unreserved vault balance")
+
+        # Recovery never transfers externally inline. It moves the owner's
+        # unreserved treasury allocation into the same pull-payment ledger used
+        # for approved recipients.
+        vault.balance = vault.balance - amount
+        self.claimable[vault.owner] = (
+            self.claimable.get(vault.owner, u256(0)) + amount
+        )
+
+    @gl.public.write
+    def withdraw(self) -> None:
+        caller = gl.message.sender_address
+        amount = self.claimable.get(caller, u256(0))
+
+        if amount == u256(0):
+            raise gl.vm.UserError("nothing to withdraw")
+        if amount > self.balance:
+            raise gl.vm.UserError("contract balance is insufficient")
+
+        # Effects before interaction. External value messages execute on
+        # finalization on the chain layer.
+        self.claimable[caller] = u256(0)
+        _Recipient(caller).emit_transfer(value=amount)
 
     @gl.public.write
     def set_agent(self, vault_id: u256, new_agent: Address) -> None:
