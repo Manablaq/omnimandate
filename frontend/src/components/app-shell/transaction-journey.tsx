@@ -44,7 +44,7 @@ export function TransactionJourney({ state = "idle", transactionHash = null, err
       : state === "error"
         ? error ?? "The transaction did not complete."
         : state === "idle"
-          ? "This shared view will show the path from preparation to network finality once transactions are connected."
+          ? "This view tracks the active transaction from wallet confirmation through network finality."
           : "Submitted is not final, and accepted is not irreversible.";
 
   return (

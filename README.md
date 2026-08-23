@@ -19,7 +19,7 @@ Everything else fails closed.
 > Status: **v1 Intelligent Contract implemented and Direct Mode verified.**
 > Pinned toolchain, GenVM validation, normal typecheck, and ABI generation pass.
 > Full Direct Mode regression suite: **84/84 tests passed on 2026-08-22**.
-> Bradbury deployment and live-network contract verification completed on 2026-08-22. Frontend deployment remains pending.
+> Bradbury deployment and live-network contract verification completed on 2026-08-22. Frontend integration is implemented and live-verified against Bradbury; production frontend deployment remains pending.
 
 ## Core rule
 
@@ -122,24 +122,38 @@ scope and product semantics
 → Intelligent Contract implementation
 → Direct Mode regression testing
 → GenVM lint / validation / typecheck / ABI verification
+→ Bradbury deployment and live-network verification
+→ validator approval / denial verification
+→ transaction finality verification
+→ live Bradbury withdrawal verification
+→ browser-wallet Bradbury integration
+→ bounded vault and request discovery
+→ create-vault write flow
+→ spend-request submission and adjudication flows
+→ claimable and withdrawal flow
+→ accepted-state automatic UI reconciliation
+→ manual live-browser lifecycle verification through FINALIZED
 ```
 
-Bradbury contract verification is complete. See [Bradbury Live Verification](docs/BRADBURY_LIVE_VERIFICATION.md).
-
-Next:
+Remaining before submission:
 
 ```text
-frontend integration
-→ browser E2E
+production frontend deployment
+→ automated browser E2E / final cross-browser QA
 → reviewer-readiness audit
 → submission
 ```
+
+The frontend deliberately distinguishes `ACCEPTED` from `FINALIZED`. Accepted contract
+state is reflected immediately in the dashboard, while finality continues to be tracked
+separately. External GEN withdrawal is not presented as irreversible until network
+finalization.
 
 ## Links
 
 - Repository: https://github.com/Manablaq/omnimandate
 - Target network: GenLayer Bradbury Testnet
-- Live app: not deployed yet
+- Live app: production deployment pending
 - Contract: `0x04c1E361ec0Da96a263794F1f582989c2419267C` on GenLayer Bradbury Testnet
 
 ## Documentation
