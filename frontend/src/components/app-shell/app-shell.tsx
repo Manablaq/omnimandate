@@ -104,7 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-workspace-view={activeSection}>
       <aside className="app-sidebar">
         <OmniMark compact />
         <div className="app-sidebar__divider" />

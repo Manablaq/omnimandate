@@ -52,7 +52,7 @@ export function RequestPanel({
   );
 
   return (
-    <div className="app-panel app-panel--requests request-panel" id="requests">
+    <div className="app-panel workspace-section app-panel--requests request-panel" id="requests">
       <div className="app-panel__head">
         <div>
           <span className="technical-label">Spend requests</span>

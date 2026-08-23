@@ -97,9 +97,9 @@ export function WorkspaceSections({
   );
 
   return (
-    <div className="workspace-sections">
-      <section className="workspace-section" id="mandates" aria-labelledby="mandates-heading">
-        <div className="workspace-section__head">
+    <div className="workspace-sections workspace-unified-grid">
+      <section className="app-panel workspace-section" id="mandates" aria-labelledby="mandates-heading">
+        <div className="app-panel__head workspace-section__head">
           <div>
             <span className="technical-label">Mandates</span>
             <h2 id="mandates-heading">Policy bindings in force</h2>
@@ -183,8 +183,8 @@ export function WorkspaceSections({
         )}
       </section>
 
-      <section className="workspace-section" id="evidence" aria-labelledby="evidence-heading">
-        <div className="workspace-section__head">
+      <section className="app-panel workspace-section" id="evidence" aria-labelledby="evidence-heading">
+        <div className="app-panel__head workspace-section__head">
           <div>
             <span className="technical-label">Evidence</span>
             <h2 id="evidence-heading">Immutable request evidence</h2>
@@ -270,8 +270,8 @@ export function WorkspaceSections({
         )}
       </section>
 
-      <section className="workspace-section" id="activity" aria-labelledby="activity-heading">
-        <div className="workspace-section__head">
+      <section className="app-panel workspace-section workspace-section--wide" id="activity" aria-labelledby="activity-heading">
+        <div className="app-panel__head workspace-section__head">
           <div>
             <span className="technical-label">Activity</span>
             <h2 id="activity-heading">Decision and transaction activity</h2>
@@ -330,11 +330,11 @@ export function WorkspaceSections({
       </section>
 
       <section
-        className="workspace-section"
+        className="app-panel workspace-section workspace-section--wide"
         id="documentation"
         aria-labelledby="workspace-documentation-heading"
       >
-        <div className="workspace-section__head">
+        <div className="app-panel__head workspace-section__head">
           <div>
             <span className="technical-label">Documentation</span>
             <h2 id="workspace-documentation-heading">Source, specification, and verification</h2>

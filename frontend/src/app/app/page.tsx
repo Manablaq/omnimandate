@@ -337,8 +337,8 @@ export default function AppOverview() {
         </div>
       </section>
 
-      <section className="app-grid">
-        <div className="app-panel app-panel--vault" id="vaults">
+      <section className="app-grid workspace-core-grid">
+        <div className="app-panel workspace-section app-panel--vault" id="vaults">
           <div className="app-panel__head">
             <div>
               <span className="technical-label">Vaults</span>

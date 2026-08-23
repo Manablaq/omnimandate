@@ -518,3 +518,259 @@ h1,h2,h3,p { margin-top: 0; } h1,h2,h3 { font-family: var(--font-display), Georg
     margin-left: 22px;
   }
 }
+
+/* OMNIMANDATE_UNIFIED_WORKSPACE_V2
+   One visual language for the complete /app workspace.
+   Overrides the earlier split app-panel/workspace-section treatment. */
+
+.workspace-core-grid,
+.workspace-unified-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.workspace-sections {
+  margin-top: 0;
+  gap: 16px;
+}
+
+.workspace-core-grid .workspace-section,
+.workspace-unified-grid .workspace-section {
+  min-width: 0;
+  margin: 0;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-raised);
+  box-shadow: none;
+}
+
+.workspace-unified-grid .workspace-section--wide {
+  grid-column: 1 / -1;
+}
+
+.workspace-core-grid .app-panel__head,
+.workspace-unified-grid .app-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 0;
+  padding: 0;
+  border: 0;
+}
+
+.workspace-core-grid .app-panel__head h2,
+.workspace-unified-grid .app-panel__head h2,
+.workspace-section__head h2 {
+  margin: 6px 0 0;
+  color: var(--text);
+  font: 650 22px/1.08 var(--font-display), Georgia, serif;
+  letter-spacing: -.032em;
+}
+
+.workspace-core-grid .technical-label,
+.workspace-unified-grid .technical-label {
+  color: var(--text-muted);
+}
+
+.workspace-core-grid .app-panel--vault,
+.workspace-core-grid .app-panel--requests {
+  background: var(--surface-raised);
+}
+
+.workspace-core-grid .empty-panel,
+.workspace-core-grid .request-empty,
+.workspace-unified-grid .workspace-empty {
+  margin-top: 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface-muted);
+}
+
+.wallet-empty,
+.overview-counts,
+.app-metrics article {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-raised);
+  box-shadow: none;
+}
+
+.wallet-empty {
+  border-color: var(--border);
+}
+
+.app-metrics {
+  gap: 12px;
+}
+
+.app-metrics article {
+  min-width: 0;
+}
+
+.overview-counts {
+  padding: 18px 20px;
+}
+
+.app-metrics strong,
+.workspace-section code,
+.workspace-section strong,
+.request-card code,
+.vault-card code {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.workspace-core-grid button,
+.workspace-unified-grid button,
+.workspace-core-grid a,
+.workspace-unified-grid a {
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease,
+    opacity .18s ease;
+}
+
+.workspace-doc-grid a {
+  background: var(--surface-muted);
+}
+
+.workspace-doc-grid a:hover {
+  background: var(--surface);
+}
+
+.workspace-core-grid + .workspace-unified-grid {
+  margin-top: 16px;
+}
+
+@media (max-width: 980px) {
+  .workspace-core-grid,
+  .workspace-unified-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-unified-grid .workspace-section--wide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace-core-grid .workspace-section,
+  .workspace-unified-grid .workspace-section {
+    padding: 17px;
+  }
+
+  .workspace-core-grid .app-panel__head h2,
+  .workspace-unified-grid .app-panel__head h2,
+  .workspace-section__head h2 {
+    font-size: 20px;
+  }
+}
+
+/* OMNIMANDATE_WORKSPACE_VIEW_ROUTER_V3
+   The app is a workspace, not one giant scrolling document.
+   Only the sidebar-selected destination is rendered as the active main view. */
+
+.app-shell[data-workspace-view] .app-content {
+  min-height: calc(100vh - 58px);
+}
+
+/* Overview owns the welcome, account state, metrics and global totals. */
+.app-shell[data-workspace-view]:not([data-workspace-view="overview"]) .app-welcome,
+.app-shell[data-workspace-view]:not([data-workspace-view="overview"]) .wallet-empty,
+.app-shell[data-workspace-view]:not([data-workspace-view="overview"]) .app-metrics,
+.app-shell[data-workspace-view]:not([data-workspace-view="overview"]) .overview-counts {
+  display: none;
+}
+
+.app-shell[data-workspace-view="overview"] .workspace-core-grid,
+.app-shell[data-workspace-view="overview"] .workspace-unified-grid {
+  display: none;
+}
+
+/* Core data views: show Vaults OR Spend Requests, never both. */
+.app-shell[data-workspace-view="vaults"] .workspace-core-grid,
+.app-shell[data-workspace-view="requests"] .workspace-core-grid {
+  display: block;
+  margin-top: 0;
+}
+
+.app-shell[data-workspace-view="vaults"] .workspace-core-grid > :not(#vaults),
+.app-shell[data-workspace-view="requests"] .workspace-core-grid > :not(#requests) {
+  display: none;
+}
+
+.app-shell[data-workspace-view="vaults"] #vaults,
+.app-shell[data-workspace-view="requests"] #requests {
+  width: 100%;
+  min-height: 380px;
+}
+
+.app-shell[data-workspace-view="vaults"] .workspace-unified-grid,
+.app-shell[data-workspace-view="requests"] .workspace-unified-grid {
+  display: none;
+}
+
+/* New workspace destinations: exactly one selected section at a time. */
+.app-shell[data-workspace-view="mandates"] .workspace-core-grid,
+.app-shell[data-workspace-view="evidence"] .workspace-core-grid,
+.app-shell[data-workspace-view="activity"] .workspace-core-grid,
+.app-shell[data-workspace-view="documentation"] .workspace-core-grid {
+  display: none;
+}
+
+.app-shell[data-workspace-view="mandates"] .workspace-unified-grid,
+.app-shell[data-workspace-view="evidence"] .workspace-unified-grid,
+.app-shell[data-workspace-view="activity"] .workspace-unified-grid,
+.app-shell[data-workspace-view="documentation"] .workspace-unified-grid {
+  display: block;
+  margin-top: 0;
+}
+
+.app-shell[data-workspace-view="mandates"] .workspace-unified-grid > :not(#mandates),
+.app-shell[data-workspace-view="evidence"] .workspace-unified-grid > :not(#evidence),
+.app-shell[data-workspace-view="activity"] .workspace-unified-grid > :not(#activity),
+.app-shell[data-workspace-view="documentation"] .workspace-unified-grid > :not(#documentation) {
+  display: none;
+}
+
+.app-shell[data-workspace-view="mandates"] #mandates,
+.app-shell[data-workspace-view="evidence"] #evidence,
+.app-shell[data-workspace-view="activity"] #activity,
+.app-shell[data-workspace-view="documentation"] #documentation {
+  width: 100%;
+  min-height: 380px;
+}
+
+/* The active page begins cleanly below the fixed workspace header. */
+.app-shell[data-workspace-view="vaults"] #vaults,
+.app-shell[data-workspace-view="requests"] #requests,
+.app-shell[data-workspace-view="mandates"] #mandates,
+.app-shell[data-workspace-view="evidence"] #evidence,
+.app-shell[data-workspace-view="activity"] #activity,
+.app-shell[data-workspace-view="documentation"] #documentation {
+  scroll-margin-top: 74px;
+}
+
+/* Avoid inherited grid-column rules when a section becomes its own screen. */
+.app-shell[data-workspace-view="activity"] .workspace-section--wide,
+.app-shell[data-workspace-view="documentation"] .workspace-section--wide {
+  grid-column: auto;
+}
+
+/* Mobile uses the same single-view model. */
+@media (max-width: 700px) {
+  .app-shell[data-workspace-view="vaults"] #vaults,
+  .app-shell[data-workspace-view="requests"] #requests,
+  .app-shell[data-workspace-view="mandates"] #mandates,
+  .app-shell[data-workspace-view="evidence"] #evidence,
+  .app-shell[data-workspace-view="activity"] #activity,
+  .app-shell[data-workspace-view="documentation"] #documentation {
+    min-height: 0;
+  }
+}
