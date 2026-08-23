@@ -232,6 +232,177 @@ export async function discoverOmniMandateVaultPage(
   };
 }
 
+
+export const REQUEST_SCAN_PAGE_SIZE = 100;
+export const REQUEST_READ_BATCH_SIZE = 10;
+export const REQUEST_READ_CONCURRENCY = 5;
+
+export type OmniMandateRequestState = "SUBMITTED" | "APPROVED" | "DENIED" | "CANCELLED";
+export type OmniMandatePolicyStatus = "" | "COMPLIANT" | "NON_COMPLIANT" | "UNCLEAR";
+export type OmniMandateEvidenceStatus = "" | "CORROBORATED" | "CONFLICTING" | "INSUFFICIENT";
+
+export type OmniMandateSpendRequest = {
+  id: bigint;
+  vaultId: bigint;
+  requester: Address;
+  recipient: Address;
+  amount: bigint;
+  purpose: string;
+  category: string;
+  primaryEvidenceUrl: string;
+  primaryEvidenceSha256: string;
+  corroborationUrl: string;
+  corroborationSha256: string;
+  evidenceObservedAt: bigint;
+  mandateVersion: bigint;
+  mandateHash: string;
+  createdAt: string;
+  resolvedAt: string;
+  state: OmniMandateRequestState;
+  policyStatus: OmniMandatePolicyStatus;
+  evidenceStatus: OmniMandateEvidenceStatus;
+  reason: string;
+};
+
+export type OmniMandateRequestPage = {
+  totalRequestCount: bigint;
+  scannedRange: VaultScanRange | null;
+  requests: OmniMandateSpendRequest[];
+  isComplete: boolean;
+};
+
+function requireRequestState(
+  record: Record<string, unknown>,
+  functionName: string,
+): OmniMandateRequestState {
+  const value = requireStringField(record, "state", functionName);
+  if (!["SUBMITTED", "APPROVED", "DENIED", "CANCELLED"].includes(value)) {
+    throw new Error(`${functionName} returned an invalid state field.`);
+  }
+  return value as OmniMandateRequestState;
+}
+
+function requirePolicyStatus(
+  record: Record<string, unknown>,
+  functionName: string,
+): OmniMandatePolicyStatus {
+  const value = requireStringField(record, "policy_status", functionName);
+  if (!["", "COMPLIANT", "NON_COMPLIANT", "UNCLEAR"].includes(value)) {
+    throw new Error(`${functionName} returned an invalid policy_status field.`);
+  }
+  return value as OmniMandatePolicyStatus;
+}
+
+function requireEvidenceStatus(
+  record: Record<string, unknown>,
+  functionName: string,
+): OmniMandateEvidenceStatus {
+  const value = requireStringField(record, "evidence_status", functionName);
+  if (!["", "CORROBORATED", "CONFLICTING", "INSUFFICIENT"].includes(value)) {
+    throw new Error(`${functionName} returned an invalid evidence_status field.`);
+  }
+  return value as OmniMandateEvidenceStatus;
+}
+
+function toSpendRequest(id: bigint, value: unknown): OmniMandateSpendRequest {
+  const functionName = "get_spend_request";
+  const record = requireRecord(value, functionName);
+  const returnedId = requireUint256Field(record, "id", functionName);
+  if (returnedId !== id) {
+    throw new Error(`${functionName} returned an unexpected request id.`);
+  }
+
+  return {
+    id,
+    vaultId: requireUint256Field(record, "vault_id", functionName),
+    requester: requireAddressField(record, "requester", functionName),
+    recipient: requireAddressField(record, "recipient", functionName),
+    amount: requireUint256Field(record, "amount", functionName),
+    purpose: requireStringField(record, "purpose", functionName),
+    category: requireStringField(record, "category", functionName),
+    primaryEvidenceUrl: requireStringField(record, "primary_evidence_url", functionName),
+    primaryEvidenceSha256: requireStringField(record, "primary_evidence_sha256", functionName),
+    corroborationUrl: requireStringField(record, "corroboration_url", functionName),
+    corroborationSha256: requireStringField(record, "corroboration_sha256", functionName),
+    evidenceObservedAt: requireUint256Field(record, "evidence_observed_at", functionName),
+    mandateVersion: requireUint256Field(record, "mandate_version", functionName),
+    mandateHash: requireStringField(record, "mandate_hash", functionName),
+    createdAt: requireStringField(record, "created_at", functionName),
+    resolvedAt: requireStringField(record, "resolved_at", functionName),
+    state: requireRequestState(record, functionName),
+    policyStatus: requirePolicyStatus(record, functionName),
+    evidenceStatus: requireEvidenceStatus(record, functionName),
+    reason: requireStringField(record, "reason", functionName),
+  };
+}
+
+async function readSpendRequest(id: bigint): Promise<OmniMandateSpendRequest> {
+  const result = await genlayerReadClient.readContract({
+    ...liveReadOptions,
+    jsonSafeReturn: true,
+    functionName: "get_spend_request",
+    args: [id],
+  });
+
+  return toSpendRequest(id, result);
+}
+
+async function readSpendRequestBatch(ids: readonly bigint[]) {
+  const results = new Array<OmniMandateSpendRequest>(ids.length);
+  let nextIndex = 0;
+  const workerCount = Math.min(REQUEST_READ_CONCURRENCY, ids.length);
+
+  await Promise.all(Array.from({ length: workerCount }, async () => {
+    while (nextIndex < ids.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await readSpendRequest(ids[index]);
+    }
+  }));
+
+  return results;
+}
+
+async function readSpendRequestsBounded(ids: readonly bigint[]) {
+  const requests: OmniMandateSpendRequest[] = [];
+  for (let offset = 0; offset < ids.length; offset += REQUEST_READ_BATCH_SIZE) {
+    const batch = ids.slice(offset, offset + REQUEST_READ_BATCH_SIZE);
+    requests.push(...await readSpendRequestBatch(batch));
+  }
+  return requests;
+}
+
+export async function discoverOmniMandateRequestPage(
+  startId = BigInt(1),
+): Promise<OmniMandateRequestPage> {
+  const totalRequestCount = await readUint256("get_request_count");
+  if (startId < BigInt(1) || startId > totalRequestCount) {
+    return {
+      totalRequestCount,
+      scannedRange: null,
+      requests: [],
+      isComplete: startId > totalRequestCount,
+    };
+  }
+
+  const endId =
+    startId + BigInt(REQUEST_SCAN_PAGE_SIZE - 1) > totalRequestCount
+      ? totalRequestCount
+      : startId + BigInt(REQUEST_SCAN_PAGE_SIZE - 1);
+  const ids = Array.from(
+    { length: Number(endId - startId + BigInt(1)) },
+    (_, index) => startId + BigInt(index),
+  );
+  const requests = await readSpendRequestsBounded(ids);
+
+  return {
+    totalRequestCount,
+    scannedRange: { startId, endId },
+    requests,
+    isComplete: endId === totalRequestCount,
+  };
+}
+
 export function calculateOwnedVaultAggregates(vaults: readonly OmniMandateVault[]) {
   return vaults.reduce((totals, vault) => ({
     availableTreasury: totals.availableTreasury + (vault.balance - vault.reservedBalance),

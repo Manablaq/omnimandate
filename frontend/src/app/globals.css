@@ -66,3 +66,43 @@ h1,h2,h3,p { margin-top: 0; } h1,h2,h3 { font-family: var(--font-display), Georg
 
 .journey-step.is-complete > span, .journey-step.is-current > span { color: var(--verified); border-color: var(--verified); }.journey-step.is-complete b, .journey-step.is-current b { color: var(--text); }.journey-step.is-complete i { background: var(--verified); }.journey-pending--success { color: var(--verified); border-color: color-mix(in srgb, var(--verified) 50%, var(--border)); }.journey-pending--error { color: var(--denied); border-color: color-mix(in srgb, var(--denied) 50%, var(--border)); }.transaction-journey__hash { margin-bottom: 7px !important; overflow-wrap: anywhere; font-family: var(--font-mono), monospace; }
 .vault-dialog__overlay { position: fixed; z-index: 40; inset: 0; background: rgba(8,17,14,.5); backdrop-filter: blur(4px); }.vault-dialog__content { position: fixed; z-index: 41; top: 50%; left: 50%; width: min(690px, calc(100vw - 28px)); max-height: min(840px, calc(100vh - 28px)); overflow: auto; padding: 23px; border: 1px solid var(--border-strong); border-radius: 7px; color: var(--text); background: var(--surface-raised); box-shadow: 0 28px 80px var(--shadow); transform: translate(-50%, -50%); }.vault-dialog__content:focus { outline: none; }.vault-dialog__head { display: flex; align-items: start; justify-content: space-between; gap: 20px; }.vault-dialog__head h2 { margin: 6px 0 9px; font-size: 28px; line-height: 1; }.vault-dialog__head p { max-width: 550px; margin: 0; color: var(--text-muted); font-size: 11px; line-height: 1.55; }.vault-dialog__close { display: grid; flex: 0 0 auto; width: 31px; height: 31px; place-items: center; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); background: transparent; cursor: pointer; }.vault-dialog__close:disabled { cursor: not-allowed; opacity: .55; }.vault-form { display: grid; gap: 15px; margin-top: 22px; }.vault-form > label, .vault-form__grid > label { display: grid; gap: 6px; color: var(--text); font-size: 11px; font-weight: 700; }.vault-form input, .vault-form textarea { width: 100%; padding: 10px 11px; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); background: var(--surface-muted); font: 400 12px var(--font-body), sans-serif; }.vault-form textarea { resize: vertical; line-height: 1.5; }.vault-form input:focus, .vault-form textarea:focus { outline: 2px solid color-mix(in srgb, var(--verified) 55%, transparent); outline-offset: 1px; }.vault-form input:disabled, .vault-form textarea:disabled { opacity: .68; cursor: progress; }.vault-form small { color: var(--text-muted); font-size: 9px; font-weight: 400; line-height: 1.4; }.vault-form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }.vault-form__validation, .vault-form__error { padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--denied) 45%, var(--border)); border-radius: 4px; color: var(--denied); background: var(--denied-soft); font-size: 10px; line-height: 1.45; }.vault-form .transaction-journey { margin-top: 2px; padding: 16px; }.transaction-journey--compact h3 { font-size: 19px; }.transaction-journey--compact .journey-track { margin: 21px 0 15px; }.vault-form__actions { display: flex; justify-content: end; gap: 9px; margin-top: 3px; }.vault-form__actions .quiet-button { margin-left: 0; cursor: pointer; }.vault-form__actions .app-primary-button { min-height: 39px; }.vault-form__actions .quiet-button:disabled { cursor: not-allowed; }
+
+
+/* OMNIMANDATE_REQUEST_WORKFLOW */
+.request-dialog__content { width: min(760px, calc(100vw - 28px)); }
+.vault-form select { width: 100%; padding: 10px 11px; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); background: var(--surface-muted); font: 400 12px var(--font-body), sans-serif; }
+.vault-form select:focus { outline: 2px solid color-mix(in srgb, var(--verified) 55%, transparent); outline-offset: 1px; }
+.vault-form select:disabled { opacity: .68; cursor: progress; }
+.mono-input { font-family: var(--font-mono), monospace !important; font-size: 10px !important; }
+.demo-fixture-button { display: inline-flex; align-items: center; gap: 7px; margin-top: 17px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--network) 40%, var(--border)); border-radius: 4px; color: var(--network); background: var(--network-soft); font: 650 10px var(--font-body), sans-serif; cursor: pointer; }
+.demo-fixture-button:disabled { cursor: not-allowed; opacity: .58; }
+.request-panel .small-action:disabled { cursor: not-allowed; opacity: .48; }
+.request-list { display: grid; gap: 10px; margin-top: 17px; }
+.request-card { padding: 15px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface-muted); }
+.request-card__head { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+.request-card__head h3 { margin: 5px 0 3px; font: 650 15px/1.2 var(--font-display), Georgia, serif; letter-spacing: -.025em; }
+.request-card__head p { margin: 0; color: var(--text-muted); font-size: 9px; }
+.request-state { flex: 0 0 auto; padding: 5px 7px; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--text-muted); font: 700 8px var(--font-mono), monospace; letter-spacing: .06em; }
+.request-state--approved { color: var(--verified); border-color: color-mix(in srgb, var(--verified) 45%, var(--border)); background: var(--verified-soft); }
+.request-state--denied { color: var(--denied); border-color: color-mix(in srgb, var(--denied) 45%, var(--border)); background: var(--denied-soft); }
+.request-state--submitted { color: var(--network); border-color: color-mix(in srgb, var(--network) 45%, var(--border)); background: var(--network-soft); }
+.request-card__metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 15px; margin-top: 15px; }
+.request-card__metrics span { display: block; color: var(--text-muted); font: 500 8px var(--font-mono), monospace; letter-spacing: .06em; text-transform: uppercase; }
+.request-card__metrics strong { display: block; margin-top: 4px; overflow-wrap: anywhere; font-size: 10px; line-height: 1.3; }
+.request-decision { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border); }
+.request-decision > span { padding: 4px 6px; border-radius: 3px; color: var(--text-muted); background: var(--surface-raised); font: 650 8px var(--font-mono), monospace; }
+.request-decision p { width: 100%; margin: 4px 0 0; color: var(--text-muted); font-size: 10px; line-height: 1.45; }
+.request-card__actions { display: flex; justify-content: end; margin-top: 14px; }
+.request-card__actions .quiet-button { display: inline-flex; align-items: center; gap: 6px; margin-left: 0; }
+.request-load-more { margin: 4px 0 0; }
+.request-read-error { margin-top: 18px; }
+.claimable-action { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 13px; padding: 16px 19px; border: 1px solid color-mix(in srgb, var(--verified) 40%, var(--border)); border-radius: 5px; background: var(--verified-soft); }
+.claimable-action h3 { margin: 5px 0 4px; font-size: 17px; }
+.claimable-action p { max-width: 660px; margin: 0; color: var(--text-muted); font-size: 10px; line-height: 1.45; }
+.accepted-state-banner { padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--network) 36%, var(--border)); border-radius: 4px; background: var(--network-soft); }
+.accepted-state-banner > span:last-child { color: var(--text-muted); font-size: 10px; }
+@media (max-width: 700px) {
+  .request-card__metrics { grid-template-columns: 1fr; }
+  .claimable-action { align-items: stretch; flex-direction: column; }
+  .vault-form__grid { grid-template-columns: 1fr; }
+}

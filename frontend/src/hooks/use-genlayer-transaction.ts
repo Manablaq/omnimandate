@@ -1,7 +1,7 @@
 "use client";
 
 import { ExecutionResult, TransactionStatus, type Hash } from "genlayer-js/types";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { GenLayerWriteClient } from "@/components/wallet/wallet-provider";
 
 export type TransactionState =
@@ -34,15 +34,17 @@ export function useGenLayerTransaction() {
   const [state, setState] = useState<TransactionState>("idle");
   const [transactionHash, setTransactionHash] = useState<Hash | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const operationId = useRef(0);
 
   const reset = useCallback(() => {
+    operationId.current += 1;
     setState("idle");
     setTransactionHash(null);
     setError(null);
   }, []);
 
   const monitorFinalization = useCallback(
-    async (writeClient: GenLayerWriteClient, hash: Hash) => {
+    async (writeClient: GenLayerWriteClient, hash: Hash, id: number) => {
       try {
         const finalizedReceipt = await writeClient.waitForTransactionReceipt({
           hash,
@@ -50,6 +52,8 @@ export function useGenLayerTransaction() {
           interval: 5000,
           retries: 900,
         });
+
+        if (operationId.current !== id) return;
 
         if (
           finalizedReceipt.txExecutionResultName !==
@@ -65,8 +69,7 @@ export function useGenLayerTransaction() {
         setState("finalized");
         setError(null);
       } catch {
-        // A receipt-monitor timeout/network interruption is not a chain failure.
-        // Keep the truthful ACCEPTED state instead of falsely reporting an error.
+        if (operationId.current !== id) return;
         setState("accepted");
         setError(null);
       }
@@ -76,25 +79,28 @@ export function useGenLayerTransaction() {
 
   const submit = useCallback(
     async ({ writeClient, request }: SubmitTransactionOptions) => {
+      const id = operationId.current + 1;
+      operationId.current = id;
+
       setState("awaiting_wallet");
       setTransactionHash(null);
       setError(null);
 
       let hash: Hash;
-
       try {
         hash = (await writeClient.writeContract(request)) as Hash;
       } catch (caughtError) {
+        if (operationId.current !== id) return false;
         setState("error");
         setError(submissionError(caughtError));
         return false;
       }
 
+      if (operationId.current !== id) return false;
       setTransactionHash(hash);
       setState("submitted");
 
       let acceptedReceipt;
-
       try {
         setState("consensus");
         acceptedReceipt = await writeClient.waitForTransactionReceipt({
@@ -104,53 +110,33 @@ export function useGenLayerTransaction() {
           retries: 240,
         });
       } catch {
+        if (operationId.current !== id) return false;
         setState("consensus");
         setError(
-          "Transaction submitted to Bradbury and still processing. Its transaction hash remains valid.",
+          "Transaction submitted to Bradbury and is still processing. Its transaction hash remains valid.",
         );
         return false;
       }
 
-      if (acceptedReceipt.statusName === TransactionStatus.FINALIZED) {
-        if (
-          acceptedReceipt.txExecutionResultName !==
-          ExecutionResult.FINISHED_WITH_RETURN
-        ) {
-          setState("error");
-          setError(
-            "The transaction finalized, but the contract execution did not complete successfully.",
-          );
-          return false;
-        }
+      if (operationId.current !== id) return false;
 
-        setState("finalized");
-        setError(null);
-        return true;
-      }
-
-      if (acceptedReceipt.statusName !== TransactionStatus.ACCEPTED) {
-        setState("consensus");
-        setError(
-          "Transaction submitted to Bradbury and is still progressing toward acceptance.",
-        );
-        return false;
-      }
-
+      // waitForTransactionReceipt({ status: ACCEPTED }) is itself the acceptance
+      // gate. Do not compare receipt.statusName back to the enum here: the SDK
+      // receipt representation can differ from the requested enum value. If the
+      // waiter resolves, Bradbury has reached at least the requested ACCEPTED
+      // lifecycle state.
       if (
         acceptedReceipt.txExecutionResultName ===
         ExecutionResult.FINISHED_WITH_ERROR
       ) {
         setState("error");
-        setError("The contract execution failed before finalization.");
+        setError("The contract execution failed.");
         return false;
       }
 
       setState("accepted");
       setError(null);
-
-      // Return control to the UI immediately at ACCEPTED so it can refresh
-      // contract state without waiting through Bradbury's finality window.
-      void monitorFinalization(writeClient, hash);
+      void monitorFinalization(writeClient, hash, id);
       return true;
     },
     [monitorFinalization],

@@ -33,7 +33,7 @@ type TransactionJourneyProps = {
 export function TransactionJourney({ state = "idle", transactionHash = null, error = null, compact = false }: TransactionJourneyProps) {
   const reduceMotion = useReducedMotion();
   const activeStep = stepStates[state];
-  const title = state === "idle" ? "Awaiting a transaction" : state === "finalized" ? "Transaction finalized" : state === "error" ? "Transaction needs attention" : "Create vault in progress";
+  const title = state === "idle" ? "Awaiting a transaction" : state === "finalized" ? "Transaction finalized" : state === "error" ? "Transaction needs attention" : "Transaction in progress";
   const status = state.replaceAll("_", " ").toUpperCase();
   const detail = state === "accepted"
     ? "Accepted on Bradbury. The dashboard has been refreshed, but this transaction is still inside the finality window."
