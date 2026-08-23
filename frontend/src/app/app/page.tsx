@@ -5,7 +5,7 @@ import { formatEther } from "viem";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { AccountAccess } from "@/components/app-shell/account-access";
-import { TransactionJourney } from "@/components/app-shell/transaction-journey";
+import { WorkspaceSections } from "@/components/workspace/workspace-sections";
 import { CreateVaultDialog } from "@/components/vaults/create-vault-dialog";
 import { CreateSpendRequestDialog } from "@/components/requests/create-spend-request-dialog";
 import { RequestPanel } from "@/components/requests/request-panel";
@@ -229,7 +229,7 @@ export default function AppOverview() {
 
   return (
     <AppShell>
-      <section className="app-welcome">
+      <section className="app-welcome" id="overview">
         <div>
           <span className="eyebrow">OmniMandate workspace</span>
           <h1>Build a treasury<br /><em>with a point of view.</em></h1>
@@ -463,11 +463,13 @@ export default function AppOverview() {
           onAdjudicate={(request) => void adjudicate(request)}
         />
       </section>
-
-      <TransactionJourney
-        state={transaction.state}
+      <WorkspaceSections
+        canRead={canRead}
+        associatedVaults={associatedVaults}
+        requests={requestDiscovery.requests}
+        transactionState={transaction.state}
         transactionHash={transaction.transactionHash}
-        error={transaction.error}
+        transactionError={transaction.error}
       />
 
       {writeClient && (

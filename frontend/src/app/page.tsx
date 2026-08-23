@@ -16,6 +16,22 @@ const productCards = [
 
 const verification = ["deployment", "approval path", "denial path", "finalized external withdrawal"];
 
+const DOCUMENTATION_LINKS: Record<string, string> = {
+  "What is OmniMandate?": "https://github.com/Manablaq/omnimandate#readme",
+  "Overview": "https://github.com/Manablaq/omnimandate#readme",
+  "Quick start": "https://github.com/Manablaq/omnimandate#readme",
+  "Vaults": "https://github.com/Manablaq/omnimandate/blob/main/docs/IMPLEMENTATION_CORE_V1.md",
+  "Mandates": "https://github.com/Manablaq/omnimandate/blob/main/docs/SPEC_V1.md",
+  "Spending requests": "https://github.com/Manablaq/omnimandate/blob/main/docs/IMPLEMENTATION_REQUESTS_V1.md",
+  "Evidence": "https://github.com/Manablaq/omnimandate/blob/main/docs/IMPLEMENTATION_ADJUDICATION_V1.md",
+  "Decisions": "https://github.com/Manablaq/omnimandate/blob/main/docs/IMPLEMENTATION_ADJUDICATION_V1.md",
+  "Finality": "https://github.com/Manablaq/omnimandate/blob/main/docs/BRADBURY_LIVE_VERIFICATION.md",
+  "Withdrawals": "https://github.com/Manablaq/omnimandate/blob/main/docs/IMPLEMENTATION_WITHDRAWAL_V1.md",
+  "Security model": "https://github.com/Manablaq/omnimandate/blob/main/docs/THREAT_MODEL.md",
+  "Bradbury verification": "https://github.com/Manablaq/omnimandate/blob/main/docs/BRADBURY_LIVE_VERIFICATION.md",
+  "FAQ": "https://github.com/Manablaq/omnimandate#readme",
+};
+
 export default function Home() {
   return (
     <main className="marketing-page">
@@ -55,8 +71,8 @@ export default function Home() {
       </section>
 
       <section className="section docs-section" id="documentation" aria-labelledby="docs-title">
-        <div className="docs-heading"><div><span className="eyebrow">Documentation</span><h2 id="docs-title">A clear path in.</h2></div><p>Explore the concepts behind the operating model. Documentation links are being prepared.</p></div>
-        <div className="docs-grid">{documentation.map((item, index) => <a href="#documentation" key={item} className="doc-card"><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong><ArrowUpRight size={17} /></a>)}</div>
+        <div className="docs-heading"><div><span className="eyebrow">Documentation</span><h2 id="docs-title">A clear path in.</h2></div><p>Open the source specification, architecture, security model, and live Bradbury verification record.</p></div>
+        <div className="docs-grid">{documentation.map((item, index) => <a href={DOCUMENTATION_LINKS[item]} target="_blank" rel="noreferrer" key={item} className="doc-card"><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong><ArrowUpRight size={17} /></a>)}</div>
       </section>
 
       <section className="section faq-section" aria-labelledby="faq-title">
@@ -73,7 +89,7 @@ export default function Home() {
 
       <section className="final-cta"><div><span className="eyebrow eyebrow--light">OmniMandate</span><h2>Create an intelligent spending boundary<br /><em>that can explain itself.</em></h2></div><Link href="/app" className="button button--ivory">Launch OmniMandate <ArrowUpRight size={17} /></Link></section>
 
-      <footer className="footer"><div className="footer__brand"><OmniMark inverse /><p>Intelligent treasury control.<br />Built on GenLayer.</p></div><div><span>PRODUCT</span><a href="#product">Product</a><a href="#how-it-works">How it works</a><a href="#security">Security</a></div><div><span>DOCUMENTATION</span>{["Overview", "Quick start", "Security model", "FAQ"].map(item => <a href="#documentation" key={item}>{item}</a>)}</div><div><span>NETWORK</span><p>Bradbury Testnet</p><code>0x04c1…267C</code><p>Built on GenLayer</p></div></footer>
+      <footer className="footer"><div className="footer__brand"><OmniMark inverse /><p>Intelligent treasury control.<br />Built on GenLayer.</p></div><div><span>PRODUCT</span><a href="#product">Product</a><a href="#how-it-works">How it works</a><a href="#security">Security</a></div><div><span>DOCUMENTATION</span>{["Overview", "Quick start", "Security model", "FAQ"].map(item => <a href={DOCUMENTATION_LINKS[item]} target="_blank" rel="noreferrer" key={item}>{item}</a>)}</div><div><span>NETWORK</span><p>Bradbury Testnet</p><code>0x04c1…267C</code><p>Built on GenLayer</p></div></footer>
     </main>
   );
 }

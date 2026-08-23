@@ -138,8 +138,7 @@ scope and product semantics
 Remaining before submission:
 
 ```text
-production frontend deployment
-→ automated browser E2E / final cross-browser QA
+final production-browser sanity check
 → reviewer-readiness audit
 → submission
 ```
@@ -153,7 +152,7 @@ finalization.
 
 - Repository: https://github.com/Manablaq/omnimandate
 - Target network: GenLayer Bradbury Testnet
-- Live app: production deployment pending
+- Live app: https://omnimandate-i1am.vercel.app
 - Contract: `0x04c1E361ec0Da96a263794F1f582989c2419267C` on GenLayer Bradbury Testnet
 
 ## Documentation
