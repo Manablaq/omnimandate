@@ -2,10 +2,13 @@
 
 import { ClipboardList, LoaderCircle, Plus, RefreshCw, ShieldCheck } from "lucide-react";
 import { formatEther } from "viem";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { AccountAccess } from "@/components/app-shell/account-access";
 import { TransactionJourney } from "@/components/app-shell/transaction-journey";
+import { CreateVaultDialog } from "@/components/vaults/create-vault-dialog";
 import { useWallet } from "@/components/wallet/wallet-provider";
+import { useGenLayerTransaction } from "@/hooks/use-genlayer-transaction";
 import { useOmniMandateOverview } from "@/hooks/use-omnimandate-overview";
 import { useOmniMandateVaultDiscovery } from "@/hooks/use-omnimandate-vault-discovery";
 import type { OmniMandateVault } from "@/lib/omnimandate-reads";
@@ -33,7 +36,9 @@ function VaultCard({ vault }: { vault: OmniMandateVault }) {
 }
 
 export default function AppOverview() {
-  const { address, isOnBradbury } = useWallet();
+  const { address, connectionState, isOnBradbury, writeClient } = useWallet();
+  const [isCreateVaultOpen, setIsCreateVaultOpen] = useState(false);
+  const transaction = useGenLayerTransaction();
   const canRead = Boolean(address && isOnBradbury);
   const overview = useOmniMandateOverview({ address, enabled: canRead });
   const vaultDiscovery = useOmniMandateVaultDiscovery({ address, enabled: canRead });
@@ -46,19 +51,19 @@ export default function AppOverview() {
       ? "Partial"
       : "Waiting";
   const welcomeCopy = canRead
-    ? "Your connected Bradbury session can read the contract’s latest final overview and bounded vault discovery."
+    ? "Your connected Bradbury session reflects accepted contract state immediately while finality is tracked separately."
     : address
       ? "Switch to Bradbury Testnet to load your read-only contract overview."
       : "Connect a wallet to view your vaults, mandates, and the request activity bound to them.";
   const claimableDetail = overview.state === "success"
-    ? "Available to this connected address from the latest final contract state."
+    ? "Available to this connected address from the latest accepted contract state."
     : canRead
       ? "Funds available to this connected address after the read completes."
       : address
         ? "Switch to Bradbury Testnet to load this value."
         : "Connect a wallet to load this value.";
   const aggregateDetail = vaultDiscovery.isComplete
-    ? "Summed from latest-final owned vault fields."
+    ? "Summed from latest accepted owned-vault state; pending writes remain subject to finality."
     : canRead
       ? "Shown after complete bounded owner discovery."
       : "Connect a Bradbury wallet to discover owned vaults.";
@@ -69,9 +74,23 @@ export default function AppOverview() {
     ["Claimable", claimable, claimableDetail],
   ];
 
-  const refreshAll = () => {
-    void Promise.all([overview.refresh(), vaultDiscovery.refresh()]);
+  const refreshAll = async () => {
+    await Promise.all([overview.refresh(), vaultDiscovery.refresh()]);
   };
+
+  const reconcileAfterAcceptedWrite = async () => {
+    await refreshAll();
+
+    window.setTimeout(() => {
+      void refreshAll();
+    }, 1500);
+
+    window.setTimeout(() => {
+      void refreshAll();
+    }, 4000);
+  };
+  const isTransactionRunning = ["awaiting_wallet", "submitted", "consensus", "accepted"].includes(transaction.state);
+  const canCreateVault = connectionState === "connected" && Boolean(address && isOnBradbury && writeClient) && !isTransactionRunning;
 
   const scannedRange = vaultDiscovery.scannedRange;
   const scanSummary = scannedRange && vaultDiscovery.totalVaultCount !== null
@@ -81,15 +100,21 @@ export default function AppOverview() {
       : "Vault discovery has not started.";
 
   return <AppShell>
-    <section className="app-welcome"><div><span className="eyebrow">OmniMandate workspace</span><h1>Build a treasury<br /><em>with a point of view.</em></h1><p>{welcomeCopy}</p></div><button className="app-primary-button" type="button" disabled title="Vault creation will be enabled with contract write integration" aria-label="Vault creation will be enabled with contract write integration"><Plus size={16} /> Create vault</button></section>
+    <section className="app-welcome"><div><span className="eyebrow">OmniMandate workspace</span><h1>Build a treasury<br /><em>with a point of view.</em></h1><p>{welcomeCopy}</p></div><button className="app-primary-button" type="button" disabled={!canCreateVault} onClick={() => { transaction.reset(); setIsCreateVaultOpen(true); }} title={canCreateVault ? "Create a vault on Bradbury Testnet" : "Connect a wallet on Bradbury Testnet to create a vault"}><Plus size={16} /> Create vault</button></section>
     <AccountAccess />
-    {canRead && <section className="overview-read-status" aria-live="polite"><span className="technical-label">Read-only overview · latest final state</span><button className="small-action overview-refresh" type="button" onClick={refreshAll} disabled={isRefreshing}>{isRefreshing ? <RefreshCw size={14} className="is-spinning" /> : <RefreshCw size={14} />}{isRefreshing ? "Refreshing" : "Refresh"}</button></section>}
+    {transaction.state === "accepted" && (
+      <section className="overview-read-status" aria-live="polite">
+        <span className="technical-label">Accepted · pending finality</span>
+        <span>Accepted contract state is reflected below. The finality window is still open.</span>
+      </section>
+    )}
+    {canRead && <section className="overview-read-status" aria-live="polite"><span className="technical-label">Live overview · latest accepted state</span><button className="small-action overview-refresh" type="button" onClick={refreshAll} disabled={isRefreshing}>{isRefreshing ? <RefreshCw size={14} className="is-spinning" /> : <RefreshCw size={14} />}{isRefreshing ? "Refreshing" : "Refresh"}</button></section>}
     {overview.state === "error" && <section className="overview-read-error" role="alert"><span>{overview.error}</span><button type="button" onClick={() => void overview.refresh()}>Retry overview</button></section>}
     <section className="app-metrics" aria-label="Treasury metrics">{metrics.map(([label, value, detail]) => <article key={label}><span>{label}</span><strong className={!address && value === "—" ? "metric-connect" : ""}>{value}</strong><p>{detail}</p></article>)}</section>
-    <section className="overview-counts" aria-label="Global contract overview counts"><span className="technical-label">Global contract totals</span><p>Latest-final totals across the deployed OmniMandate contract.</p><div><article><span>Vaults</span><strong>{readValue(overview.state, overview.data?.vaultCount)}</strong></article><article><span>Mandates</span><strong>{readValue(overview.state, overview.data?.mandateCount)}</strong></article><article><span>Requests</span><strong>{readValue(overview.state, overview.data?.requestCount)}</strong></article></div></section>
+    <section className="overview-counts" aria-label="Global contract overview counts"><span className="technical-label">Global contract totals</span><p>Accepted-aware totals across the deployed OmniMandate contract. Pending transactions remain subject to finality.</p><div><article><span>Vaults</span><strong>{readValue(overview.state, overview.data?.vaultCount)}</strong></article><article><span>Mandates</span><strong>{readValue(overview.state, overview.data?.mandateCount)}</strong></article><article><span>Requests</span><strong>{readValue(overview.state, overview.data?.requestCount)}</strong></article></div></section>
     <section className="app-grid"><div className="app-panel app-panel--vault" id="vaults"><div className="app-panel__head"><div><span className="technical-label">Vaults</span><h2>Wallet vault discovery</h2></div>{canRead && <span className={`vault-discovery-status${vaultDiscovery.isComplete ? " is-complete" : ""}`}>{discoveryStatus}</span>}</div>
       {!canRead && <div className="empty-panel"><span><ShieldCheck size={19} /></span><div><h3>Connect to discover vaults</h3><p>Connect a wallet on Bradbury Testnet to scan bounded global vault IDs and identify your owned or authorized-agent vaults.</p></div></div>}
-      {canRead && vaultDiscovery.state === "loading" && vaultDiscovery.scannedCount === BigInt(0) && <div className="empty-panel"><span><LoaderCircle size={19} className="is-spinning" /></span><div><h3>Discovering vaults</h3><p>Reading the current bounded latest-final vault page.</p></div></div>}
+      {canRead && vaultDiscovery.state === "loading" && vaultDiscovery.scannedCount === BigInt(0) && <div className="empty-panel"><span><LoaderCircle size={19} className="is-spinning" /></span><div><h3>Discovering vaults</h3><p>Reading the current bounded accepted-state vault page from Bradbury.</p></div></div>}
       {canRead && vaultDiscovery.state === "error" && <section className="overview-read-error vault-discovery-error" role="alert"><span>{vaultDiscovery.error}</span><button type="button" onClick={() => void vaultDiscovery.retry()}>Retry</button></section>}
       {canRead && vaultDiscovery.data && <div className="vault-discovery"><p className="vault-discovery__summary">{scanSummary} {vaultDiscovery.isComplete ? "Wallet discovery is complete." : "More vault pages may contain additional matches."}</p>
         <section className="vault-group" aria-labelledby="owned-vaults-heading"><div className="vault-group__head"><div><span className="technical-label">Owned vaults</span><h3 id="owned-vaults-heading">Treasury you control</h3></div><span>{vaultDiscovery.ownedVaults.length}</span></div>
@@ -99,6 +124,16 @@ export default function AppOverview() {
         {!vaultDiscovery.isComplete && vaultDiscovery.state !== "loading" && <button className="quiet-button vault-discovery__next" type="button" onClick={() => void vaultDiscovery.loadNextPage()}>Load next vault page</button>}
       </div>}
     </div><div className="app-panel app-panel--requests" id="requests"><div className="app-panel__head"><div><span className="technical-label">Recent requests</span><h2>No wallet requests loaded</h2></div></div><div className="request-empty"><ClipboardList size={25} /><p>Global request totals are available. Wallet-specific request discovery will use the discovered vault IDs in a future read-only view.</p></div></div></section>
-    <TransactionJourney />
+    <TransactionJourney state={transaction.state} transactionHash={transaction.transactionHash} error={transaction.error} />
+    {writeClient && <CreateVaultDialog
+      open={isCreateVaultOpen}
+      onOpenChange={setIsCreateVaultOpen}
+      writeClient={writeClient}
+      state={transaction.state}
+      transactionHash={transaction.transactionHash}
+      transactionError={transaction.error}
+      submit={transaction.submit}
+      onSuccess={reconcileAfterAcceptedWrite}
+    />}
   </AppShell>;
 }

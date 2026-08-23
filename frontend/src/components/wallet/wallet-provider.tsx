@@ -35,7 +35,7 @@ declare global {
 
 export type WalletConnectionState = "disconnected" | "connecting" | "connected" | "switching" | "error";
 
-type GenLayerWriteClient = ReturnType<typeof createClient>;
+export type GenLayerWriteClient = ReturnType<typeof createClient>;
 
 type WalletContextValue = {
   address: Address | null;

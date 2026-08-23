@@ -47,12 +47,12 @@ export type OmniMandateVaultPage = {
   isComplete: boolean;
 };
 
-// genlayer-js 1.1.8 exposes read state selection as transactionHashVariant,
-// rather than the README's undocumented stateStatus field. latest-final is the
-// SDK's final-state variant; it is not an accepted/non-final read.
-const finalizedReadOptions = {
+// genlayer-js 1.1.8 exposes read state selection as transactionHashVariant.
+// The live dashboard deliberately uses LATEST_NONFINAL so ACCEPTED Bradbury
+// state can appear immediately; transaction finality is tracked separately.
+const liveReadOptions = {
   address: OMNIMANDATE_CONTRACT_ADDRESS,
-  transactionHashVariant: TransactionHashVariant.LATEST_FINAL,
+  transactionHashVariant: TransactionHashVariant.LATEST_NONFINAL,
 };
 
 function requireUint256(value: unknown, functionName: string): bigint {
@@ -65,7 +65,7 @@ function requireUint256(value: unknown, functionName: string): bigint {
 
 async function readUint256(functionName: string, args: readonly (string | bigint)[] = []) {
   const result = await genlayerReadClient.readContract({
-    ...finalizedReadOptions,
+    ...liveReadOptions,
     jsonSafeReturn: false,
     functionName,
     args: [...args],
@@ -156,7 +156,7 @@ async function readVault(id: bigint): Promise<OmniMandateVault> {
   // Structured GenVM values are JSON-safe only when returned with this option.
   // Numeric fields are validated and converted back to bigint in toVault.
   const result = await genlayerReadClient.readContract({
-    ...finalizedReadOptions,
+    ...liveReadOptions,
     jsonSafeReturn: true,
     functionName: "get_vault",
     args: [id],
